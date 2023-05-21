@@ -1,34 +1,14 @@
 import { ChangeEvent, useState, FocusEvent } from 'react';
 
-interface ValidationRule {
-  validate: (value: string) => boolean;
-  errorMessage: string;
-}
-
-interface FieldTouched {
-  [key: string]: boolean;
-}
-
-interface Errors {
-  [key: string]: string;
-}
-
-type Values = {
-  [key: string]: string;
-};
-
-type FormHookResult = [
-  Values,
-  (e: ChangeEvent<HTMLInputElement>) => void,
-  FieldTouched,
+import {
   Errors,
-  (e: FocusEvent<HTMLInputElement>) => void,
-];
+  FieldTouched,
+  FormHookResult,
+  ValidationResult,
+  ValidationRule,
+  Values,
+} from 'hooks/types';
 
-type ValidationResult = {
-  updatedFieldTouched: FieldTouched;
-  updatedErrors: Errors;
-};
 export const useForm: () => FormHookResult = () => {
   const [values, setValues] = useState<Values>({});
   const [fieldTouched, setFieldTouched] = useState<FieldTouched>({
@@ -47,6 +27,7 @@ export const useForm: () => FormHookResult = () => {
     },
   };
 
+  console.log(values);
   const validateFields: (e: ChangeEvent<HTMLInputElement>) => ValidationResult = e => {
     e.persist();
     const { name, value } = e.target;
@@ -83,5 +64,17 @@ export const useForm: () => FormHookResult = () => {
     setErrors(updatedErrors);
   };
 
-  return [values, handleChange, fieldTouched, errors, handleBlur];
+  const resetForm = (): void => {
+    const initialValues: Values = {};
+
+    Object.keys(values).forEach(key => {
+      initialValues[key] = '';
+    });
+
+    setValues(initialValues);
+    setFieldTouched({ email: false });
+    setErrors({});
+  };
+
+  return { values, handleChange, fieldTouched, errors, handleBlur, resetForm };
 };

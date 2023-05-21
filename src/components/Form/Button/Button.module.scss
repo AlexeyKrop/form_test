@@ -20,7 +20,12 @@
     background: #009FF4FF;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  &:disabled {
+    background: rgba(0, 122, 244, 0.5);
+    border-radius: 6px;
   }
 }

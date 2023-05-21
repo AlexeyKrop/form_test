@@ -1,9 +1,13 @@
 import React, { FC, FormEvent, useEffect } from 'react';
 
+import formLogo from '../../assets/form.png';
+
 import style from './Form.module.scss';
 
-import { Input } from 'components/Form/FormElement/types';
+import { CustomInput } from 'components/Form/Input/Input';
+import { FormProps, Input } from 'components/Form/types';
 import { useForm } from 'hooks/useForm';
+import { separateTypeElementFromTypeAndText } from 'utils/separateFormTypeElementAndText';
 
 const inputElements: Input[] = [
   {
@@ -31,14 +35,14 @@ const inputElements: Input[] = [
   },
 ];
 
-interface FormProps {
-  children: React.ReactNode;
-  isDisabledBtn: (value: boolean, errors: string) => void;
-}
 export const Form: FC<FormProps> = ({ children, isDisabledBtn }) => {
-  console.log('form render');
+  const { values, handleChange, errors, handleBlur, resetForm } = useForm();
 
-  const [values, handleChange, fieldTouched, errors, handleBlur] = useForm();
+  const onSubmitForm: (e: FormEvent<HTMLFormElement>) => void = e => {
+    e.preventDefault();
+    alert(JSON.stringify(values));
+    resetForm();
+  };
 
   useEffect(() => {
     const requiredFields = inputElements.filter(input => input.required);
@@ -49,31 +53,26 @@ export const Form: FC<FormProps> = ({ children, isDisabledBtn }) => {
 
     isDisabledBtn(isDisabled, errors.email);
   }, [values]);
-  const onSubmitForm: (e: FormEvent<HTMLFormElement>) => void = e => {
-    e.preventDefault();
-    console.log(values);
-  };
 
   return (
     <form onSubmit={onSubmitForm} className={style.form}>
+      <div className={style.wrapperImage}>
+        <img src={formLogo} alt="Logo" />
+      </div>
       {inputElements.map(field => {
+        const attributeType = separateTypeElementFromTypeAndText(field.type);
+
         return (
-          <>
-            <label htmlFor={field.id}>{field.id}</label>
-            <input
-              key={field.id}
-              onBlur={handleBlur}
-              name={field.id}
-              required={field.required}
-              defaultValue={field.defaultValue}
-              onChange={handleChange}
-            />
-          </>
+          <CustomInput
+            handleBlur={handleBlur}
+            // handleChange={handleChange}
+            key={field.id}
+            field={field}
+            error={errors[field.id]}
+            attributeType={attributeType}
+          />
         );
       })}
-      <input onBlur={handleBlur} name="firstName" required onChange={handleChange} />
-      <input onBlur={handleBlur} name="email" required onChange={handleChange} />
-      {fieldTouched.email && errors.email && <p>{errors.email}</p>}
       {children}
     </form>
   );
