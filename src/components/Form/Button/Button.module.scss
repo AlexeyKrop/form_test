@@ -1,0 +1,26 @@
+.button{
+  max-width: 184px;
+  width: 100%;
+  padding: 12px;
+
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+
+  color: #FFFFFF;
+  background: #007AF4;
+  border-radius: 6px;
+  outline: none;
+  border: none;
+
+  cursor: pointer;
+
+  &:hover{
+    background: #009FF4FF;
+  }
+
+  &:active {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+}
