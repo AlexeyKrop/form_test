@@ -65,7 +65,7 @@ export const Form: FC<FormProps> = ({ children, isDisabledBtn }) => {
         return (
           <CustomInput
             handleBlur={handleBlur}
-            // handleChange={handleChange}
+            handleChange={handleChange}
             key={field.id}
             field={field}
             error={errors[field.id]}

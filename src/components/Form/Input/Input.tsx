@@ -13,16 +13,15 @@ interface Input {
 
 interface CustomInputProps {
   field: Input;
-  // handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleBlur: (e: FocusEvent<HTMLInputElement>) => void;
   attributeType: string;
   error: string;
 }
 export const CustomInput: FC<CustomInputProps> = memo(
-  ({ field, handleBlur, attributeType, error }: CustomInputProps) => {
+  ({ field, handleBlur, attributeType, handleChange, error }: CustomInputProps) => {
     const { id, label, defaultValue, required } = field;
     const [inputValue, setInputValue] = useState<string>(defaultValue || '');
-    const { handleChange } = useForm();
 
     console.log('CustomInput render');
     const handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void = e => {
