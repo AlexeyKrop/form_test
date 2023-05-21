@@ -4,7 +4,9 @@ export interface ValidationRule {
   validate: (value: string) => boolean;
   errorMessage: string;
 }
-
+export type InputObj = {
+  [key: string]: string;
+};
 export interface FieldTouched {
   [key: string]: boolean;
 }

@@ -4,7 +4,6 @@ import formLogo from '../../assets/form.png';
 
 import style from './Form.module.scss';
 
-import { CustomInput } from 'components/Form/Input/Input';
 import { FormProps, Input } from 'components/Form/types';
 import { useForm } from 'hooks/useForm';
 import { separateTypeElementFromTypeAndText } from 'utils/separateFormTypeElementAndText';
@@ -36,12 +35,26 @@ const inputElements: Input[] = [
 ];
 
 export const Form: FC<FormProps> = ({ children, isDisabledBtn }) => {
-  const { values, handleChange, errors, handleBlur, resetForm } = useForm();
+  const { values, handleChange, errors, handleBlur, resetForm } = useForm(inputElements);
 
   const onSubmitForm: (e: FormEvent<HTMLFormElement>) => void = e => {
     e.preventDefault();
-    alert(JSON.stringify(values));
+    alert(JSON.stringify(values, null, 2));
     resetForm();
+  };
+
+  const getDefaultValue: (id: string, defaultValue: string | undefined) => string = (
+    id,
+    defaultValue,
+  ) => {
+    if (values[id] !== undefined) {
+      return values[id];
+    }
+    if (defaultValue !== undefined) {
+      return defaultValue;
+    }
+
+    return '';
   };
 
   useEffect(() => {
@@ -52,25 +65,31 @@ export const Form: FC<FormProps> = ({ children, isDisabledBtn }) => {
     );
 
     isDisabledBtn(isDisabled, errors.email);
-  }, [values]);
+  }, [values, isDisabledBtn, errors.email]);
 
   return (
     <form onSubmit={onSubmitForm} className={style.form}>
       <div className={style.wrapperImage}>
         <img src={formLogo} alt="Logo" />
       </div>
-      {inputElements.map(field => {
-        const attributeType = separateTypeElementFromTypeAndText(field.type);
+      {inputElements.map(({ id, label, defaultValue, required, type }) => {
+        const attributeType = separateTypeElementFromTypeAndText(type);
 
         return (
-          <CustomInput
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            key={field.id}
-            field={field}
-            error={errors[field.id]}
-            attributeType={attributeType}
-          />
+          <div key={id} className={style.inputWrapper}>
+            <label htmlFor={id}>{label}</label>
+            <input
+              name={id}
+              className={style.input}
+              type={attributeType}
+              required={required}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder={defaultValue || 'Enter value'}
+              value={getDefaultValue(id, defaultValue)}
+            />
+            <p className={style.error}>{errors[id]}</p>
+          </div>
         );
       })}
       {children}

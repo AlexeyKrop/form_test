@@ -1,50 +1,24 @@
 import { ChangeEvent, useState, FocusEvent } from 'react';
 
-import {
-  Errors,
-  FieldTouched,
-  FormHookResult,
-  ValidationResult,
-  ValidationRule,
-  Values,
-} from 'hooks/types';
+import { Input } from 'components/Form/types';
+import { Errors, FieldTouched, FormHookResult, InputObj, Values } from 'hooks/types';
+import { validateFields } from 'utils/validateFields';
 
-export const useForm: () => FormHookResult = () => {
-  const [values, setValues] = useState<Values>({});
+export const useForm: (initialValue: Input[]) => FormHookResult = initialValue => {
+  const inputElementsObj: InputObj = initialValue.reduce(
+    (acc: InputObj, input: Input) => {
+      return {
+        ...acc,
+        [input.id]: input.defaultValue || '',
+      };
+    },
+    {},
+  );
+  const [values, setValues] = useState<Values>(inputElementsObj);
   const [fieldTouched, setFieldTouched] = useState<FieldTouched>({
     email: false,
   });
   const [errors, setErrors] = useState<Errors>({});
-
-  const validationRules: { [key: string]: ValidationRule } = {
-    email: {
-      validate: (value: string) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        return regex.test(value);
-      },
-      errorMessage: 'Invalid email',
-    },
-  };
-
-  console.log(values);
-  const validateFields: (e: ChangeEvent<HTMLInputElement>) => ValidationResult = e => {
-    e.persist();
-    const { name, value } = e.target;
-    const updatedFieldTouched = { ...fieldTouched, [name]: true };
-    const updatedValues = { ...values, [name]: value };
-    const updatedErrors: Errors = {};
-
-    Object.keys(validationRules).forEach(key => {
-      const rule = validationRules[key];
-
-      if (updatedFieldTouched[key] && !rule.validate(updatedValues[key])) {
-        updatedErrors[key] = rule.errorMessage;
-      }
-    });
-
-    return { updatedFieldTouched, updatedErrors };
-  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     e.persist();
@@ -52,13 +26,22 @@ export const useForm: () => FormHookResult = () => {
 
     setValues(values => ({ ...values, [name]: value }));
 
-    const { updatedFieldTouched, updatedErrors } = validateFields(e);
+    const { updatedFieldTouched, updatedErrors } = validateFields(
+      e,
+      fieldTouched,
+      values,
+    );
 
     setFieldTouched(updatedFieldTouched);
+
     setErrors(updatedErrors);
   };
   const handleBlur = (e: FocusEvent<HTMLInputElement>): void => {
-    const { updatedFieldTouched, updatedErrors } = validateFields(e);
+    const { updatedFieldTouched, updatedErrors } = validateFields(
+      e,
+      fieldTouched,
+      values,
+    );
 
     setFieldTouched(updatedFieldTouched);
     setErrors(updatedErrors);

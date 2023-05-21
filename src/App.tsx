@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
 import { Button } from 'components/Form/Button/Button';
 import { Form } from 'components/Form/Form';
@@ -7,10 +7,10 @@ const App: FC = () => {
   const [isDisabled, setDisabled] = useState<boolean>(false);
   const [errorField, setError] = useState(false);
 
-  const isDisabledBtn: (value: boolean, error: string) => void = (value, error) => {
+  const isDisabledBtn = useCallback((value: boolean, error: string) => {
     setError(!!error);
     setDisabled(value);
-  };
+  }, []);
 
   return (
     <Form isDisabledBtn={isDisabledBtn}>
