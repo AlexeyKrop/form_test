@@ -1,7 +1,3 @@
-## Demo
-
-Check out the live demo of MyFormApp [here](https://AlexeyKrop.github.io/form_test/).
-
 ## Installation
 
 1. Clone the repository: git clone https://github.com/AlexeyKrop/form_test.git
